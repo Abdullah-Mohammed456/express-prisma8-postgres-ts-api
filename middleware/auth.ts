@@ -5,7 +5,7 @@ import { AppError } from "../utils/AppError";
 declare global {
   namespace Express {
     interface Request {
-      userID?: any;
+      user?: any;
     }
   }
 }
@@ -25,10 +25,23 @@ export const validateToken = (
 
   try {
     const decode = jwt.verify(token, JWT_SECRET);
-    req.userID = decode;
+    req.user = decode;
 
     next();
   } catch (error) {
     throw new AppError("Invalid or Expired Token", 401);
   }
+};
+
+export const authorizeAdmin = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const Admin = req.user.role === "ADMIN";
+
+  if (!Admin) {
+    throw new AppError("Access Denied: Admins Only", 403);
+  }
+  next();
 };

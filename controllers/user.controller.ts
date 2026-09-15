@@ -28,7 +28,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
 
   const { password: _, ...userWithoutPassword } = user;
   const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, {
-    expiresIn: "1h",
+    expiresIn: "7d",
   });
 
   res
