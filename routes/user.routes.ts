@@ -7,6 +7,15 @@ import * as auth from "../middleware/auth.js";
 
 const userRouter = express.Router();
 
+userRouter.get("/api/raw-users", userController.getRawUsers);
+
+userRouter.get("/api/raw-users-posts", userController.getRawUsersWithPosts);
+
+userRouter.get(
+  "/api/raw-users-posts-orm",
+  userController.getRawUsersWithPostsORM,
+);
+
 userRouter.post("/", validateUser, userController.createUser);
 
 userRouter.post("/login", userController.loginUser);

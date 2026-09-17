@@ -7,6 +7,10 @@
     "user": {
       "model": "User",
       "namespace": "public"
+    },
+    "user_posts": {
+      "model": "UserPost",
+      "namespace": "public"
     }
   },
   "domain": {
@@ -72,7 +76,23 @@
                 }
               }
             },
-            "relations": {},
+            "relations": {
+              "user_posts": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "author_id"
+                  ]
+                },
+                "to": {
+                  "model": "UserPost",
+                  "namespace": "public"
+                }
+              }
+            },
             "storage": {
               "fields": {
                 "age": {
@@ -102,6 +122,64 @@
               },
               "namespaceId": "public",
               "table": "user"
+            }
+          },
+          "UserPost": {
+            "fields": {
+              "author_id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "title": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "user": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "author_id"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "author_id": {
+                  "column": "author_id"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "title": {
+                  "column": "title"
+                }
+              },
+              "namespaceId": "public",
+              "table": "user_posts"
             }
           }
         }
@@ -182,6 +260,63 @@
                   ]
                 }
               ]
+            },
+            "user_posts": {
+              "columns": {
+                "author_id": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "title": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "author_id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user_posts"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "author_id"
+                  ],
+                  "name": "user_posts_author_id_idx_f3862461",
+                  "prefix": "user_posts_author_id_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
             }
           }
         },
@@ -189,7 +324,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "3fc24074fa4d44c42c8e1ad3a206a2d33cdb935a125619c4d61554c3458cfe1f"
+    "storageHash": "ce4b5a0b540ef844d6752787204058f496d1f3c2cb1842213391b66317035bbf"
   },
   "execution": {
     "executionHash": "a499031370d1fd1891ca11072d3f7e11be752b686057f7c6d0900ee0159f4ed0",
