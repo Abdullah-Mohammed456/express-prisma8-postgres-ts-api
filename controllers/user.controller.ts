@@ -6,7 +6,7 @@ import { AppError } from "../utils/AppError.js";
 import { queryRaw } from "../src/prisma/raw.database.js";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "1111";
+import { JWT_SECRET } from "../config/env.js";
 
 export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;

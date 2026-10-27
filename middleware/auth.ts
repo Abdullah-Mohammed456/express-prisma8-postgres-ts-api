@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { AppError } from "../utils/AppError";
+import { JWT_SECRET } from "../config/env.js";
 
 declare global {
   namespace Express {
@@ -10,7 +11,6 @@ declare global {
   }
 }
 
-const JWT_SECRET = "1111";
 
 export const validateToken = (
   req: Request,

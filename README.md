@@ -22,19 +22,27 @@ A TypeScript REST API prototype using Express, PostgreSQL, Prisma contract tooli
    bun install
    ```
 
-2. Copy the environment example and set a local PostgreSQL connection string:
+2. Copy the environment example:
 
    ```bash
    cp .env.example .env
    ```
 
-3. Start the API:
+3. Set DATABASE_URL in .env. Generate a JWT signing key with:
+
+   ```bash
+   openssl rand -base64 48
+   ```
+
+   Put the generated value in JWT_SECRET in .env. Use a separate secret in your hosting provider settings. The API refuses to start if JWT_SECRET is missing or shorter than 32 bytes. Keep .env private and never commit it.
+
+4. Start the API:
 
    ```bash
    bun dev
    ```
 
-The server listens on port 3000 by default. The current environment example documents `DATABASE_URL`.
+The server listens on port 3000 by default. Changing JWT_SECRET invalidates existing login tokens.
 
 ## Prisma contract
 
@@ -50,20 +58,20 @@ This command emits the contract; it does not apply database migrations. A migrat
 
 | Method | Endpoint | Purpose | Access |
 | --- | --- | --- | --- |
-| `GET` | `/` | Health check | Public |
-| `POST` | `/users/` | Register a user | Public |
-| `POST` | `/users/login` | Log in | Public |
-| `GET` | `/users/` | List users | JWT required |
-| `GET` | `/users/:id` | Get a user | JWT required |
-| `PATCH` | `/users/:id` | Update a user | JWT required |
-| `DELETE` | `/users/:id` | Delete a user | JWT required |
+| GET | / | Health check | Public |
+| POST | /users/ | Register a user | Public |
+| POST | /users/login | Log in | Public |
+| GET | /users/ | List users | JWT required |
+| GET | /users/:id | Get a user | JWT required |
+| PATCH | /users/:id | Update a user | JWT required |
+| DELETE | /users/:id | Delete a user | JWT required |
 
 ## Current limitations
 
-- No automated test, build, or lint scripts are configured in `package.json`.
+- No automated test, build, or lint scripts are configured in package.json.
 - No deployment procedure is documented.
-- Authentication is development-only: the JWT middleware contains a hard-coded secret. Do not deploy this API until secret handling is fixed and the exposed secret is rotated.
-- The repository uses a Prisma 8 release-candidate CLI with `@prisma/client` 7.10.0; verify the versions are compatible before using the database integration.
+- The old JWT signing value appeared in committed source history. Configure and rotate the production JWT_SECRET before deploying; changing it logs out existing token holders.
+- The repository uses a Prisma 8 release-candidate CLI with @prisma/client 7.10.0; verify the versions are compatible before using the database integration.
 
 ## Project structure
 
@@ -73,6 +81,7 @@ middleware/      Authentication, validation, and error handling
 routes/          API route definitions
 src/prisma/      Prisma contract and database client
 utils/           Shared utilities
+config/          Runtime environment validation
 index.ts         Express application entry point
 package.json     Dependencies and scripts
 ```
