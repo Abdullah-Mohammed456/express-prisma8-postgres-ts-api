@@ -1,122 +1,78 @@
-# Express Prisma 8 PostgreSQL TypeScript API
+# Express + PostgreSQL API
 
-A production-ready RESTful API backend built with Express, TypeScript, Prisma 8 ORM, and PostgreSQL.
+A TypeScript REST API prototype using Express, PostgreSQL, Prisma contract tooling, bcrypt, and JWT-based login.
 
-This application provides a structured API architecture featuring secure JWT-based authentication, request payload validation, centralized custom error handling, and type-safe database interactions with Prisma.
+## Features
 
-## Key Features
+- User registration and login
+- JWT-protected user routes
+- Request validation and centralized error handling
+- PostgreSQL access through the Prisma contract setup
 
-- TypeScript Core: Strongly typed codebase ensuring type safety across controllers, middlewares, and models.
-- Prisma ORM & PostgreSQL: Modern database abstraction layer providing type-safe database operations.
-- JWT Authentication: Secure user login and route protection using JSON Web Tokens.
-- Input Validation: Middleware for validating payload structure and request parameters.
-- Global Error Handling: Centralized error handling using a unified custom error handler.
-- Cross-Origin Resource Sharing: Pre-configured CORS and JSON body-parsing middlewares.
+## Requirements
 
-## Tech Stack
+- Bun
+- PostgreSQL 15 or later
 
-- Runtime: Node.js / Bun
-- Framework: Express.js
-- Language: TypeScript
-- ORM: Prisma
-- Database: PostgreSQL
-- Authentication: JSON Web Tokens (JWT) & bcrypt
+## Local setup
 
-## Prerequisites
+1. Install dependencies:
 
-Before running this application, ensure the following are installed and configured:
+   ```bash
+   bun install
+   ```
 
-- Node.js (v18+) or Bun runtime (v1.0+)
-- PostgreSQL database instance (v15+)
-- Git
+2. Copy the environment example and set a local PostgreSQL connection string:
 
-## Environment Setup
+   ```bash
+   cp .env.example .env
+   ```
 
-1. Create a `.env` file in the root directory by copying `.env.example`:
+3. Start the API:
 
-```bash
-cp .env.example .env
-```
+   ```bash
+   bun dev
+   ```
 
-2. Configure environment variables in `.env`:
+The server listens on port 3000 by default. The current environment example documents `DATABASE_URL`.
 
-```env
-DATABASE_URL="postgresql://user:password@localhost:5432/mydb"
-JWT_SECRET="your_jwt_secret_key"
-PORT=3000
-```
+## Prisma contract
 
-## Installation
-
-Install project dependencies using your package manager:
+Generate the Prisma contract with:
 
 ```bash
-# Using Bun
-bun install
-
-# Using NPM
-npm install
-```
-
-## Database Migration & Setup
-
-Generate Prisma contract definitions and apply database schema changes:
-
-```bash
-# Generate Prisma contracts
 bun run contract:emit
-# or
-npx prisma contract emit
 ```
 
-## Running the Application
+This command emits the contract; it does not apply database migrations. A migration workflow is not configured in the repository yet.
 
-### Development Mode
+## API routes
 
-Start the server with hot reloading enabled:
+| Method | Endpoint | Purpose | Access |
+| --- | --- | --- | --- |
+| `GET` | `/` | Health check | Public |
+| `POST` | `/users/` | Register a user | Public |
+| `POST` | `/users/login` | Log in | Public |
+| `GET` | `/users/` | List users | JWT required |
+| `GET` | `/users/:id` | Get a user | JWT required |
+| `PATCH` | `/users/:id` | Update a user | JWT required |
+| `DELETE` | `/users/:id` | Delete a user | JWT required |
 
-```bash
-# Using Bun
-bun dev
+## Current limitations
 
-# Using NPM
-npm run dev
-```
+- No automated test, build, or lint scripts are configured in `package.json`.
+- No deployment procedure is documented.
+- Authentication is development-only: the JWT middleware contains a hard-coded secret. Do not deploy this API until secret handling is fixed and the exposed secret is rotated.
+- The repository uses a Prisma 8 release-candidate CLI with `@prisma/client` 7.10.0; verify the versions are compatible before using the database integration.
 
-The server will start listening at `http://localhost:3000`.
-
-## API Routes Overview
-
-### System
-
-| Method | Endpoint | Description | Authentication |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/` | Health check endpoint | Public |
-
-### User Endpoints (`/users`)
-
-| Method | Endpoint | Description | Authentication |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/users/` | Register a new user | Public |
-| `POST` | `/users/login` | User login | Public |
-| `GET` | `/users/` | List all users | Required (JWT) |
-| `GET` | `/users/:id` | Get user by ID | Required (JWT) |
-| `PATCH` | `/users/:id` | Update user details | Required (JWT) |
-| `DELETE` | `/users/:id` | Delete user profile | Required (JWT) |
-
-## Project Structure
+## Project structure
 
 ```text
-├── controllers/          # Business logic and request handlers
-├── middleware/           # Authentication, validation, and error middlewares
-├── routes/               # API route definitions
-├── src/
-│   └── prisma/           # Prisma contract and database client configuration
-├── utils/                # Utility modules (AppError, asyncHandler)
-├── .env.example          # Environment template
-├── .gitignore            # Git exclusion definitions
-├── index.ts              # Express application entry point
-├── package.json          # Dependency definitions and scripts
-├── tsconfig.json         # TypeScript compiler configuration
-└── README.md             # Project documentation
+controllers/     Request handlers
+middleware/      Authentication, validation, and error handling
+routes/          API route definitions
+src/prisma/      Prisma contract and database client
+utils/           Shared utilities
+index.ts         Express application entry point
+package.json     Dependencies and scripts
 ```
